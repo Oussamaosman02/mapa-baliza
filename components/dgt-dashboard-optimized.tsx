@@ -87,10 +87,10 @@ export function DgtDashboard({ initialData }: DgtDashboardProps) {
     const timeout = setTimeout(() => {
       const interval = setInterval(() => {
         startTransition(fetchData);
-      }, 10000);
+      }, 2000);
 
       return () => clearInterval(interval);
-    }, 10000);
+    }, 2000);
 
     return () => clearTimeout(timeout);
   }, []);
