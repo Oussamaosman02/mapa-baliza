@@ -1,7 +1,6 @@
 "use server";
 
 import { decodeData } from "@/utils/decode";
-import fs from "fs";
 import { DgtResponse } from "../types/dgt";
 
 export const getAllDgtData = async (): Promise<DgtResponse | undefined> => {
@@ -35,7 +34,6 @@ export const getAllDgtData = async (): Promise<DgtResponse | undefined> => {
     const res = await data.text();
     const decodedData = decodeData(res);
     console.log(decodedData);
-    fs.writeFileSync("data.json", decodedData);
     return JSON.parse(decodedData);
   } catch (error) {
     console.log(error);
