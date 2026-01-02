@@ -46,11 +46,11 @@ export function DgtDashboard({ initialData }: DgtDashboardProps) {
       <main className="mx-auto max-w-7xl">
         <header className="mb-8">
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
-            Incidencias de Tráfico DGT
+            Incidencias de Tráfico DGT 3.0
           </h1>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
             Estado de las carreteras en tiempo real. {activeIncidents.length}{" "}
-            incidencias activas.
+            Balizas V16 activas .
           </p>
         </header>
 
