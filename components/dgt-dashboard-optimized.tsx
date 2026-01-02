@@ -11,6 +11,7 @@ import {
 import dynamic from "next/dynamic";
 import { DgtResponse } from "@/app/types/dgt";
 import { getAllDgtData } from "@/app/actions/dgt";
+import { Loader } from "lucide-react";
 
 const DgtMap = dynamic(
   () =>
@@ -98,8 +99,8 @@ export function DgtDashboard({ initialData }: DgtDashboardProps) {
   if (!data) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-zinc-500">
-          No se pudieron cargar los datos de tráfico.
+        <p className="text-zinc-500 flex justify-center">
+        <Loader className="animate-spin" /> Cargando datos...
         </p>
       </div>
     );
