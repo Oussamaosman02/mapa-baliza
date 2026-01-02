@@ -1,16 +1,33 @@
 "use client";
 
-import { useState, useEffect, useTransition, useMemo, lazy, Suspense } from "react";
+import {
+  useState,
+  useEffect,
+  useTransition,
+  useMemo,
+  lazy,
+  Suspense,
+} from "react";
 import dynamic from "next/dynamic";
 import { DgtResponse } from "@/app/types/dgt";
 import { getAllDgtData } from "@/app/actions/dgt";
 
-const DgtMap = dynamic(() => import("@/components/dgt-map-optimized").then(mod => ({ default: mod.DgtMap })), {
-  loading: () => <MapSkeleton />,
-  ssr: false,
-});
+const DgtMap = dynamic(
+  () =>
+    import("@/components/dgt-map-optimized").then((mod) => ({
+      default: mod.DgtMap,
+    })),
+  {
+    loading: () => <MapSkeleton />,
+    ssr: false,
+  }
+);
 
-const IncidentCard = lazy(() => import("@/components/incident-card").then(mod => ({ default: mod.IncidentCard })));
+const IncidentCard = lazy(() =>
+  import("@/components/incident-card").then((mod) => ({
+    default: mod.IncidentCard,
+  }))
+);
 
 interface DgtDashboardProps {
   initialData?: DgtResponse;
@@ -49,19 +66,27 @@ export function DgtDashboard({ initialData }: DgtDashboardProps) {
     );
   }, [data]);
 
+  const fetchData = async () => {
+    try {
+      const newData = await getAllDgtData();
+      if (newData) {
+        setData(newData);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!initialData) {
+      startTransition(fetchData);
+    }
+  }, [initialData]);
+
   useEffect(() => {
     const timeout = setTimeout(() => {
       const interval = setInterval(() => {
-        startTransition(async () => {
-          try {
-            const newData = await getAllDgtData();
-            if (newData) {
-              setData(newData);
-            }
-          } catch (error) {
-            console.error("Error fetching data:", error);
-          }
-        });
+        startTransition(fetchData);
       }, 10000);
 
       return () => clearInterval(interval);
@@ -96,9 +121,11 @@ export function DgtDashboard({ initialData }: DgtDashboardProps) {
         <DgtMap situations={activeIncidents} />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          <Suspense fallback={Array.from({ length: 8 }).map((_, i) => (
-            <IncidentCardSkeleton key={i} />
-          ))}>
+          <Suspense
+            fallback={Array.from({ length: 8 }).map((_, i) => (
+              <IncidentCardSkeleton key={i} />
+            ))}
+          >
             {activeIncidents.map((situation) => (
               <IncidentCard key={situation.situationId} situation={situation} />
             ))}
