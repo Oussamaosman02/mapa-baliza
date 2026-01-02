@@ -33,7 +33,6 @@ export const getAllDgtData = async (): Promise<DgtResponse | undefined> => {
     );
     const res = await data.text();
     const decodedData = decodeData(res);
-    console.log(decodedData);
     return JSON.parse(decodedData);
   } catch (error) {
     console.log(error);
