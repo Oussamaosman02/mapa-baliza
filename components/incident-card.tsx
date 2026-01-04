@@ -1,11 +1,13 @@
-import { memo } from "react";
 import { DgtSituation } from "@/app/types/dgt";
+import { memo } from "react";
 
 interface IncidentCardProps {
   situation: DgtSituation;
 }
 
-export const IncidentCard = memo(function IncidentCard({ situation }: IncidentCardProps) {
+export const IncidentCard = memo(function IncidentCard({
+  situation,
+}: IncidentCardProps) {
   return (
     <article className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
       <div>
@@ -19,7 +21,8 @@ export const IncidentCard = memo(function IncidentCard({ situation }: IncidentCa
                 : "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-500"
             }`}
           >
-            {situation.causa}
+            {situation.municipioIni}
+            {situation.provinciaIni && `, ${situation.provinciaIni}`}
           </span>
           <span className="shrink-0 text-xs text-zinc-500">
             {new Date(situation.fechaInicio).toLocaleDateString("es-ES")}
@@ -27,7 +30,7 @@ export const IncidentCard = memo(function IncidentCard({ situation }: IncidentCa
         </div>
 
         <h2 className="mb-1 text-lg font-bold text-zinc-900 dark:text-zinc-50">
-          {situation.carretera || "Vía desconocida"}
+          Vía: {situation.carretera || "Vía desconocida"}
         </h2>
 
         <div className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
@@ -36,17 +39,18 @@ export const IncidentCard = memo(function IncidentCard({ situation }: IncidentCa
           </span>
           {situation.pkIni && (
             <span className="ml-1 block text-xs text-zinc-500">
-              PK {situation.pkIni} - {situation.pkFin}
+              Punto Kilométrico: {situation.pkIni}{" "}
+              {situation.pkFin ? `-${situation.pkFin}` : ""}
             </span>
           )}
         </div>
 
         <div className="space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
           <p className="line-clamp-2" title={situation.subtipoVialidad}>
-            {situation.subtipoVialidad}
+            Tipo: {situation.subtipoVialidad}
           </p>
           <p>
-            {situation.municipioIni}
+            Población: {situation.municipioIni}
             {situation.provinciaIni && `, ${situation.provinciaIni}`}
           </p>
         </div>
@@ -70,6 +74,8 @@ export const IncidentCard = memo(function IncidentCard({ situation }: IncidentCa
                   ? "Creciente"
                   : situation.sentido === "negative"
                   ? "Decreciente"
+                  : situation.sentido === "both"
+                  ? "Bidireccional"
                   : situation.sentido}
               </span>
             </div>

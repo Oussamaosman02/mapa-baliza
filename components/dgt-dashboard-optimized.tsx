@@ -11,6 +11,7 @@ import {
 import dynamic from "next/dynamic";
 import { DgtResponse } from "@/app/types/dgt";
 import { getAllDgtData } from "@/app/actions/dgt";
+import { GeolocationData } from "@/app/actions/geolocation";
 import { Loader } from "lucide-react";
 
 const DgtMap = dynamic(
@@ -32,6 +33,7 @@ const IncidentCard = lazy(() =>
 
 interface DgtDashboardProps {
   initialData?: DgtResponse;
+  location?: GeolocationData | null;
 }
 
 function MapSkeleton() {
@@ -56,7 +58,7 @@ function IncidentCardSkeleton() {
   );
 }
 
-export function DgtDashboard({ initialData }: DgtDashboardProps) {
+export function DgtDashboard({ initialData, location }: DgtDashboardProps) {
   const [data, setData] = useState<DgtResponse | undefined>(initialData);
   const [isPending, startTransition] = useTransition();
 
@@ -100,7 +102,7 @@ export function DgtDashboard({ initialData }: DgtDashboardProps) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-zinc-500 flex justify-center">
-        <Loader className="animate-spin" /> Cargando datos...
+          <Loader className="animate-spin" /> Cargando datos...
         </p>
       </div>
     );
@@ -120,13 +122,30 @@ export function DgtDashboard({ initialData }: DgtDashboardProps) {
         </header>
 
         <DgtMap situations={activeIncidents} />
-
+        {location && (
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-500">
+            📍 {location.city},{" "}
+            {location.countryName === "Spain" ? "España" : location.countryName}
+          </p>
+        )}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <Suspense
             fallback={Array.from({ length: 8 }).map((_, i) => (
               <IncidentCardSkeleton key={i} />
             ))}
           >
+            {activeIncidents
+              .filter(
+                (situation) =>
+                  situation.municipioIni === location?.regionName ||
+                  situation.provinciaIni === location?.city
+              )
+              .map((situation) => (
+                <IncidentCard
+                  key={situation.situationId}
+                  situation={situation}
+                />
+              ))}
             {activeIncidents.map((situation) => (
               <IncidentCard key={situation.situationId} situation={situation} />
             ))}

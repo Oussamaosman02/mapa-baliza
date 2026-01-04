@@ -9,23 +9,35 @@ import {
   MarkerContent,
   MarkerPopup,
 } from "@/components/ui/map";
-import { useMemo, memo } from "react";
+import { default_icon, default_icon_dark } from "@/utils/image";
+import { memo, useEffect, useMemo, useState } from "react";
 
 interface DgtMapProps {
   situations: DgtSituation[];
 }
 
-const MarkerPin = memo(({ causa }: { causa: string }) => (
-  <div
-    className={`size-4 rounded-full border-2 border-white shadow-lg cursor-pointer transition-transform hover:scale-110 ${
-      causa === "Obras"
-        ? "bg-yellow-500"
-        : causa === "Accidente"
-        ? "bg-red-500"
-        : "bg-blue-500"
-    }`}
-  />
-));
+const MarkerPin = memo(({ isDark }: { isDark: boolean }) => {
+  return (
+    <div className="relative w-8 h-8">
+      <img
+        src={default_icon}
+        alt="Marker Light"
+        className="absolute inset-0 w-8 h-8 cursor-pointer transition-all duration-500 hover:scale-110"
+        style={{
+          opacity: isDark ? 0 : 1,
+        }}
+      />
+      <img
+        src={default_icon_dark}
+        alt="Marker Dark"
+        className="absolute inset-0 w-8 h-8 cursor-pointer transition-all duration-500 hover:scale-110"
+        style={{
+          opacity: isDark ? 1 : 0,
+        }}
+      />
+    </div>
+  );
+});
 
 MarkerPin.displayName = "MarkerPin";
 
@@ -187,7 +199,13 @@ export const DgtMap = memo(function DgtMap({ situations }: DgtMapProps) {
             latitude={situation.coordinates[1]}
           >
             <MarkerContent>
-              <MarkerPin causa={situation.causa} />
+              <MarkerPin
+                isDark={
+                  new Date().getTime() -
+                    new Date(situation.fechaInicio).getTime() >
+                  30 * 60 * 1000
+                }
+              />
             </MarkerContent>
             <MarkerPopup>
               <PopupContent situation={situation} />
